@@ -2,6 +2,7 @@ const router = require('express').Router();
 let Exercise = require('../models/exercise.model');
 
 router.route('/').get((req, res) => {
+	// will find only currently logged in user's exercises
 	Exercise.find()
 		.then(docs => res.json(docs))
 		.catch(err => res.status(400).json('Error: '+err));
@@ -34,8 +35,7 @@ router.route('/:id').get((req, res) => {
 })
 
 router.route('/edit/:id').post((req, res) => {
-	Exercise.findByIdAndUpdate(req.params.id,
-	{
+	Exercise.updateOne({ _id: req.params.id }, {
 		description: req.body.description,
 		duration: Number(req.body.duration),
 		date: Date.parse(req.body.date)
