@@ -15,15 +15,12 @@ export default class AddExercise extends Component {
 			users: []
 		}
 		// need to bind methods so 'this' keyword isn't undefined
-		this.onChangeUsername = this.onChangeUsername.bind(this);
-		this.onChangeDescription = this.onChangeDescription.bind(this);
-		this.onChangeDuration = this.onChangeDuration.bind(this);
-		this.onChangeDate = this.onChangeDate.bind(this);
+		this.onChange = this.onChange.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 	}
 
 	componentDidMount() {
-		axios.get('http://localhost:5000/user/')
+		axios.get('/user/')
 			.then(res => {
 				this.setState({
 					username: res.data[0].username,
@@ -32,28 +29,9 @@ export default class AddExercise extends Component {
 			}).catch(err => console.log(err));
 	}
 
-	onChangeUsername(e) {
-		const user = {
-			username: e.target.value
-		}
-		this.setState(user);
-	}
-
-	onChangeDescription(e) {
+	onChange(e) {
 		this.setState({
-			description: e.target.value
-		});
-	}
-
-	onChangeDuration(e) {
-		this.setState({
-			duration: e.target.value
-		});
-	}
-
-	onChangeDate(date) {
-		this.setState({
-			date: date
+			[e.target.id]: e.target.value
 		});
 	}
 
@@ -67,7 +45,7 @@ export default class AddExercise extends Component {
 			date: this.state.date
 		}
 
-		axios.post('http://localhost:5000/exercise/add', exercise)
+		axios.post('/exercise/add', exercise)
 			.then(res => {
 				console.log(res.data);
 				window.location = '/';
@@ -82,7 +60,7 @@ export default class AddExercise extends Component {
 				<form onSubmit={this.onSubmit}>
 					<div className="form-group">
 						<label>Username</label>
-						<select required className="form-control" value={this.state.username} onChange={this.onChangeUsername}>
+						<select id="username" required className="form-control" value={this.state.username} onChange={this.onChange}>
 							{
 								this.state.users.map((user) => {
 									return <option key={user} value={user}>{user}</option>;
@@ -92,16 +70,16 @@ export default class AddExercise extends Component {
 					</div>
 					<div className="form-group">
 						<label>Description</label>
-						<input className="form-control" type="text" value={this.state.description} onChange={this.onChangeDescription} />
+						<input id="description" className="form-control" type="text" value={this.state.description} onChange={this.onChange} />
 					</div>
 					<div className="form-group">
 						<label>Duration (in minutes)</label>
-						<input className="form-control" type="number" value={this.state.duration} onChange={this.onChangeDuration} />
+						<input id="duration" className="form-control" type="number" value={this.state.duration} onChange={this.onChange} />
 					</div>
 					<div className="form-group">
 						<label>Date</label>
 						<div>
-							<DatePicker selected={this.state.date} onChange={this.onChangeDate} />
+							<DatePicker id="date" selected={this.state.date} onChange={this.onChange} />
 						</div>
 					</div>
 					<div className="form-group">

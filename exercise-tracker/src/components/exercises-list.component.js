@@ -29,7 +29,7 @@ export default class ExerciseList extends Component {
 
 	componentDidMount() {
 		// will need to send username of currently logged in
-		axios.get('http://localhost:5000/exercise/')
+		axios.get('/exercise/')
 			.then(res => {
 				this.setState({
 					exercises: res.data
@@ -40,7 +40,7 @@ export default class ExerciseList extends Component {
 	}
 
 	deleteExercise(id) {
-		axios.delete(`http://localhost:5000/exercise/${id}`)
+		axios.delete(`/exercise/${id}`)
 			.then(res => {
 				console.log(res.data);
 				this.setState({

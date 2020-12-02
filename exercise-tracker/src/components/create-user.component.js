@@ -6,21 +6,21 @@ export default class CreateUser extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			username: ''
+			username: '',
+			email: '',
+			password: '',
+			password2: '',
+			errors: {}
 		}
 		// need to bind methods so 'this' keyword isn't undefined
 
 		this.onSubmit = this.onSubmit.bind(this);
-		this.onChangeUsername = this.onChangeUsername.bind(this);
-
-		this.state = {
-			username: ''
-		}
+		this.onChange = this.onChange.bind(this);
 	}
 
-	onChangeUsername(e) {
+	onChange(e) {
 		this.setState({
-			username: e.target.value
+			[e.target.id]: e.target.value
 		});
 	}
 
@@ -29,27 +29,36 @@ export default class CreateUser extends Component {
 
 		const user = {
 			username: this.state.username,
+			email: this.state.email,
+			password: this.state.password,
+			password2: this.state.password2
 		}
-		console.log(user);
 
-		axios.post('http://localhost:5000/user/register', user)
-			.then(res => console.log(res.data))
-			.catch(err => console.log(err));
-
-		this.setState({
-			username: ''
-		})
+		axios.post('/user/register', user)
+			.then(res => console.log(res))
+			.catch(() => window.alert("Something is not quite right..."));
 	}
-
 
 	render() {
 		return (
 			<div>
-				<h3>Create new user</h3>
+				<h3>Register</h3>
 				<form onSubmit={this.onSubmit}>
 					<div className="form-group">
 						<label>Username</label>
-						<input type="text" required className="form-control" value={this.state.username} onChange={this.onChangeUsername} />
+						<input id="username" type="text" required className="form-control" value={this.state.username} onChange={this.onChange} />
+					</div>
+					<div className="form-group">
+						<label>Email</label>
+						<input id="email" type="text" required className="form-control" value={this.state.email} onChange={this.onChange} />
+					</div>
+					<div className="form-group">
+						<label>Password</label>
+						<input id="password" type="password" required className="form-control" value={this.state.password} onChange={this.onChange} />
+					</div>
+					<div className="form-group">
+						<label>Confirm password</label>
+						<input id="password2" type="password" required className="form-control" value={this.state.password2} onChange={this.onChange} />
 					</div>
 					<div className="form-group">
 						<input type="submit" className="btn btn-secondary" value="Create User" />
