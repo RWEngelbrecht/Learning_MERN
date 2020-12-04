@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { registerUser } from '../actions/authActions';
+import classnames from 'classnames';
 
-export default class CreateUser extends Component {
+class CreateUser extends Component {
 
 	constructor(props) {
 		super(props);
@@ -16,6 +21,20 @@ export default class CreateUser extends Component {
 
 		this.onSubmit = this.onSubmit.bind(this);
 		this.onChange = this.onChange.bind(this);
+	}
+
+	componentDidMount() {
+		if (this.props.auth.isAuthenticated) {
+			this.props.history.push('/');
+		}
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.errors) {
+		  this.setState({
+			errors: nextProps.errors
+		});
+		}
 	}
 
 	onChange(e) {
@@ -34,31 +53,38 @@ export default class CreateUser extends Component {
 			password2: this.state.password2
 		}
 
-		axios.post('/user/register', user)
-			.then(res => console.log(res))
-			.catch(() => window.alert("Something is not quite right..."));
+		this.props.registerUser(user, this.props.history);
+
+		// axios.post('/user/register', user)
+		// 	.then(res => console.log(res))
+		// 	.catch(() => window.alert("Something is not quite right..."));
 	}
 
 	render() {
+		const { errors } = this.state;
 		return (
 			<div>
 				<h3>Register</h3>
 				<form onSubmit={this.onSubmit}>
 					<div className="form-group">
 						<label>Username</label>
-						<input id="username" type="text" required className="form-control" value={this.state.username} onChange={this.onChange} />
+						<input id="username" type="text" required
+								className={classnames("",{invalid: errors.username})} value={this.state.username} onChange={this.onChange} />
 					</div>
 					<div className="form-group">
 						<label>Email</label>
-						<input id="email" type="text" required className="form-control" value={this.state.email} onChange={this.onChange} />
+						<input id="email" type="text" required
+								className={classnames("",{invalid: errors.email})} value={this.state.email} onChange={this.onChange} />
 					</div>
 					<div className="form-group">
 						<label>Password</label>
-						<input id="password" type="password" required className="form-control" value={this.state.password} onChange={this.onChange} />
+						<input id="password" type="password" required
+								className={classnames("",{invalid: errors.password})} value={this.state.password} onChange={this.onChange} />
 					</div>
 					<div className="form-group">
 						<label>Confirm password</label>
-						<input id="password2" type="password" required className="form-control" value={this.state.password2} onChange={this.onChange} />
+						<input id="password2" type="password" required
+								className={classnames("",{invalid: errors.password2})} value={this.state.password2} onChange={this.onChange} />
 					</div>
 					<div className="form-group">
 						<input type="submit" className="btn btn-secondary" value="Create User" />
@@ -68,3 +94,16 @@ export default class CreateUser extends Component {
 		);
 	}
 }
+
+CreateUser.propTypes = {
+	registerUser: PropTypes.func.isRequired,
+	auth: PropTypes.object.isRequired,
+	errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+	auth: state.auth,
+	errors: state.errors
+});
+
+export default connect(mapStateToProps, { registerUser })(withRouter(CreateUser));

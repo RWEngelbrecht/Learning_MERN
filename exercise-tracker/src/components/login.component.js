@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { loginUser } from '../actions/authActions';
+import classnames from 'classnames';
 
-export default class Login extends Component {
+class Login extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
@@ -11,6 +15,21 @@ export default class Login extends Component {
 		};
 
 		this.onChange = this.onChange.bind(this);
+	}
+
+	componentDidMount() {
+		if (this.props.auth.isAuthenticated) {
+			this.props.history.push('/');
+		}
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.auth.isAutheticated)
+			this.props.history.push('/');
+		if (nextProps.errors)
+			this.setState({
+				errors: nextProps.errors
+			});
 	}
 
 	onChange(e) {
@@ -27,6 +46,7 @@ export default class Login extends Component {
 			password: this.state.password
 		};
 		console.log(userData);
+		this.props.loginUser(userData);
 	}
 
 	render() {
@@ -37,11 +57,15 @@ export default class Login extends Component {
 				<form onSubmit={this.onSubmit}>
 					<div className="form-group">
 						<label>Email</label>
-						<input id="email" type="text" required className="form-control" value={this.state.email} onChange={this.onChange} />
+						<input id="email" type="text" required
+								className={classnames("", {invalid:errors.email || errors.emailnotfound})}
+								value={this.state.email} onChange={this.onChange} />
 					</div>
 					<div className="form-group">
 						<label>Password</label>
-						<input id="password" type="password" required className="form-control" value={this.state.password} onChange={this.onChange} />
+						<input id="password" type="password" required
+								className={classnames("", {invalid:errors.password || errors.passwordincorrect})}
+								value={this.state.password} onChange={this.onChange} />
 					</div>
 					<div className="form-group">
 						<input type="submit" className="btn btn-secondary" value="Log in" />
@@ -51,3 +75,16 @@ export default class Login extends Component {
 		);
 	}
 }
+
+Login.propTypes = {
+	loginUser: PropTypes.func.isRequired,
+	auth: PropTypes.object.isRequired,
+	errors: PropTypes.object.isRequired
+}
+
+const mapStateToProps = state => ({
+	auth: state.auth,
+	errors: state.errors
+});
+
+export default connect(mapStateToProps, {loginUser})(Login);

@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { logoutUser } from '../actions/authActions';
 
 //functional react component:
 const Exercise = props => (
@@ -15,16 +18,15 @@ const Exercise = props => (
 )
 
 //class component:
-export default class ExerciseList extends Component {
+class ExerciseList extends Component {
 
 	constructor(props) {
 		super(props);
-
 		this.state = {
 			exercises: []
 		}
-
 		this.deleteExercise = this.deleteExercise.bind(this);
+		this.onLogoutClick = this.onLogoutClick.bind(this);
 	}
 
 	componentDidMount() {
@@ -37,6 +39,11 @@ export default class ExerciseList extends Component {
 			}).catch(err => {
 				console.log(err);
 			})
+	}
+
+	onLogoutClick(e) {
+		e.preventDefault();
+		this.props.logoutUser();
 	}
 
 	deleteExercise(id) {
@@ -58,23 +65,37 @@ export default class ExerciseList extends Component {
 	}
 
 	render() {
+		const { user } = this.props.auth;
 		return (
 			<div>
-				<h3>Yon Exercises</h3>
-				<table className="table">
-					<thead className="thead-dark">
-						<tr>
-							<th>Date</th>
-							<th>Description</th>
-							<th>Duration</th>
-							<th>Action</th>
-						</tr>
-					</thead>
-					<tbody>
-						{ this.exerciseList() }
-					</tbody>
-				</table>
+				<h3>{user.name}'s Exercises</h3><button className="btn btn-secondary waves-effect waves-light hoverable blue accent-3" onClick={this.onLogoutClick}></button> 
+				<div className="container">
+					<table className="table">
+						<thead className="thead-dark">
+							<tr>
+								<th>Date</th>
+								<th>Description</th>
+								<th>Duration</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							{ this.exerciseList() }
+						</tbody>
+					</table>
+				</div>
 			</div>
 		);
 	}
 }
+
+ExerciseList.propTypes = {
+	logoutUser: PropTypes.func.isRequired,
+	auth: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+	auth: state.auth
+});
+
+export default connect(mapStateToProps, { logoutUser })(ExerciseList);
