@@ -54,7 +54,7 @@ export const setUserLoading = () => {
 // log user out
 export const logoutUser = () => dispatch => {
 	// remove tokken from local storage
-	localStorage.removeItem('jwrToken');
+	localStorage.removeItem('jwtToken');
 	// remove auth header for future requests
 	setAuthToken(false);
 	// set current user to empty object
